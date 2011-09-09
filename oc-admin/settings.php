@@ -68,30 +68,6 @@
                                         }
                                         $this->redirectTo(osc_admin_base_url(true) . '?page=settings&action=comments');
                 break;
-                case ('users'):         // calling the users settings view
-                                        $this->doView('settings/users.php');
-                break;
-                case ('users_post'):    // updating users
-                                        $iUpdated                = 0;
-                                        $enabledUserValidation   = Params::getParam('enabled_user_validation');
-                                        $enabledUserValidation   = (($enabledUserValidation != '') ? true : false);
-                                        $enabledUserRegistration = Params::getParam('enabled_user_registration');
-                                        $enabledUserRegistration = (($enabledUserRegistration != '') ? true : false);
-                                        $enabledUsers            = Params::getParam('enabled_users');
-                                        $enabledUsers            = (($enabledUsers != '') ? true : false);
-
-                                        $iUpdated += Preference::newInstance()->update(array('s_value' => $enabledUserValidation)
-                                                                                      ,array('s_name'  => 'enabled_user_validation'));
-                                        $iUpdated += Preference::newInstance()->update(array('s_value' => $enabledUserRegistration)
-                                                                                      ,array('s_name'  => 'enabled_user_registration'));
-                                        $iUpdated += Preference::newInstance()->update(array('s_value' => $enabledUsers)
-                                                                                      ,array('s_name'  => 'enabled_users'));
-
-                                        if($iUpdated > 0) {
-                                            osc_add_flash_ok_message( _m('Users\' settings have been updated'), 'admin');
-                                        }
-                                        $this->redirectTo(osc_admin_base_url(true) . '?page=settings&action=users');
-                break;
                 case ('locations'):     // calling the locations settings view
                                         $location_action = Params::getParam('type');
                                         $mCountries = new Country();
@@ -539,11 +515,16 @@
                 case('mailserver'):     // calling the mailserver view
                                         $this->doView('settings/mailserver.php');
                 break;
-                case('mailserver_post'):if( defined('DEMO') ) $this->redirectTo(osc_admin_base_url(true) . '?page=settings&action=mailserver');
+                case('mailserver_post'):if( defined('DEMO') ) {
+                                            osc_add_flash_warning_message( _m("This action cannot be done because is a demo site"), 'admin');
+                                            $this->redirectTo(osc_admin_base_url(true) . '?page=settings&action=mailserver');
+                                        }
                                         // updating mailserver
                                         $iUpdated           = 0;
                                         $mailserverAuth     = Params::getParam('mailserver_auth');
                                         $mailserverAuth     = ($mailserverAuth != '' ? true : false);
+                                        $mailserverPop     = Params::getParam('mailserver_pop');
+                                        $mailserverPop     = ($mailserverPop != '' ? true : false);
                                         $mailserverType     = Params::getParam('mailserver_type');
                                         $mailserverHost     = Params::getParam('mailserver_host');
                                         $mailserverPort     = Params::getParam('mailserver_port');
@@ -558,6 +539,8 @@
 
                                         $iUpdated += Preference::newInstance()->update(array('s_value' => $mailserverAuth)
                                                                                        ,array('s_name' => 'mailserver_auth'));
+                                        $iUpdated += Preference::newInstance()->update(array('s_value' => $mailserverPop)
+                                                                                       ,array('s_name' => 'mailserver_pop'));
                                         $iUpdated += Preference::newInstance()->update(array('s_value' => $mailserverType)
                                                                                        ,array('s_name' => 'mailserver_type'));
                                         $iUpdated += Preference::newInstance()->update(array('s_value' => $mailserverHost)
@@ -587,6 +570,7 @@
                                         $dimPreview        = Params::getParam('dimPreview');
                                         $dimNormal         = Params::getParam('dimNormal');
                                         $keepOriginalImage = Params::getParam('keep_original_image');
+                                        $use_imagick       = Params::getParam('use_imagick');
                                         $type_watermark    = Params::getParam('watermark_type');
                                         $watermark_color   = Params::getParam('watermark_text_color');
                                         $watermark_text    = Params::getParam('watermark_text');
@@ -643,7 +627,12 @@
                                         $dimPreview        = strip_tags($dimPreview);
                                         $dimNormal         = strip_tags($dimNormal);
                                         $keepOriginalImage = ($keepOriginalImage != '' ? true : false);
+                                        $use_imagick       = ($use_imagick != '' ? true : false);
+                                        if(!extension_loaded('imagick')) {
+                                            $use_imagick = false;
+                                        }
 
+                                        
                                         $iUpdated += Preference::newInstance()->update(array('s_value' => $maxSizeKb)
                                                                                       ,array('s_name'  => 'maxSizeKb'));
                                         $iUpdated += Preference::newInstance()->update(array('s_value' => $allowedExt)
@@ -656,6 +645,8 @@
                                                                                       ,array('s_name'  => 'dimNormal'));
                                         $iUpdated += Preference::newInstance()->update(array('s_value' => $keepOriginalImage)
                                                                                       ,array('s_name'  => 'keep_original_image'));
+                                        $iUpdated += Preference::newInstance()->update(array('s_value' => $use_imagick)
+                                                                                      ,array('s_name'  => 'use_imagick'));
 
                                         if($iUpdated > 0) {
                                             osc_add_flash_ok_message( _m('Media config has been updated'), 'admin');
@@ -708,6 +699,7 @@
                                         $sCurrency     = Params::getParam('currency');
                                         $sWeekStart    = Params::getParam('weekStart');
                                         $sTimeFormat   = Params::getParam('timeFormat');
+                                        $sTimezone     = Params::getParam('timezone');
                                         $sNumRssItems  = Params::getParam('num_rss_items');
                                         $maxLatestItems = Params::getParam('max_latest_items_at_home');
 
@@ -720,8 +712,10 @@
                                         $sCurrency     = strip_tags($sCurrency);
                                         $sWeekStart    = strip_tags($sWeekStart);
                                         $sTimeFormat   = strip_tags($sTimeFormat);
-                                        $sNumRssItems  = strip_tags($sNumRssItems);
-                                        $maxLatestItems = strip_tags($maxLatestItems);
+                                        $sNumRssItems  = (int)strip_tags($sNumRssItems);
+                                        $maxLatestItems = (int)strip_tags($maxLatestItems);
+
+                                        $error = "";
 
                                         $iUpdated += Preference::newInstance()->update(array('s_value'   => $sPageTitle)
                                                                                       ,array('s_section' => 'osclass', 's_name' => 'pageTitle'));
@@ -741,13 +735,32 @@
                                                                                       ,array('s_section' => 'osclass', 's_name' => 'weekStart'));
                                         $iUpdated += Preference::newInstance()->update(array('s_value'   => $sTimeFormat)
                                                                                       ,array('s_section' => 'osclass', 's_name' => 'timeFormat'));
-                                        $iUpdated += Preference::newInstance()->update(array('s_value'   => $sNumRssItems)
-                                                                                      ,array('s_section' => 'osclass', 's_name' => 'num_rss_items'));
-                                        $iUpdated += Preference::newInstance()->update(array('s_value'   => $maxLatestItems)
-                                                                                      ,array('s_section' => 'osclass', 's_name' => 'maxLatestItems@home'));
+                                        $iUpdated += Preference::newInstance()->update(array('s_value'   => $sTimezone)
+                                                                                      ,array('s_section' => 'osclass', 's_name' => 'timezone'));
+                                        if(is_int($sNumRssItems)) {
+                                            $iUpdated += Preference::newInstance()->update(array('s_value'   => $sNumRssItems)
+                                                                                          ,array('s_section' => 'osclass', 's_name' => 'num_rss_items'));
+                                        } else {
+                                            if($error != '') $error .= "<br/>";
+                                            $error .= _m('Number of items in the RSS must be integer');
+                                        }
+
+                                        if(is_int($maxLatestItems)) {
+                                            $iUpdated += Preference::newInstance()->update(array('s_value'   => $maxLatestItems)
+                                                                                          ,array('s_section' => 'osclass', 's_name' => 'maxLatestItems@home'));
+                                        } else {
+                                            if($error != '') $error .= "<br/>";
+                                            $error .= _m('Number of recent items displayed at home must be integer');
+                                        }
 
                                         if($iUpdated > 0) {
-                                            osc_add_flash_ok_message( _m('General settings have been updated'), 'admin');
+                                            if($error != '') {
+                                                osc_add_flash_error_message( $error . "<br/>" . _m('General settings have been updated'), 'admin');
+                                            } else {
+                                                osc_add_flash_ok_message( _m('General settings have been updated'), 'admin');
+                                            }
+                                        } else if($error != '') {
+                                            osc_add_flash_error_message( $error , 'admin');
                                         }
 
                                         $this->redirectTo(osc_admin_base_url(true) . '?page=settings');

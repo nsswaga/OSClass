@@ -97,8 +97,10 @@
                         <?php osc_run_hook('item_detail', osc_item() ) ; ?>
                         <p class="contact_button">
                             <?php if( !osc_item_is_expired () ) { ?>
-                            <?php     if(osc_reg_user_can_contact() && osc_is_web_user_logged_in() || !osc_reg_user_can_contact() ) { ?>
-                            <strong><a href="#contact"><?php _e('Contact seller', 'modern') ; ?></a></strong>
+                            <?php if(osc_logged_user_id() != osc_item_user_id()) { ?>
+                                <?php     if(osc_reg_user_can_contact() && osc_is_web_user_logged_in() || !osc_reg_user_can_contact() ) { ?>
+                                    <strong><a href="#contact"><?php _e('Contact seller', 'modern') ; ?></a></strong>
+                                <?php     } ?>
                             <?php     } ?>
                             <?php } ?>
                             <strong class="share"><a href="<?php echo osc_item_send_friend_url() ; ?>" rel="nofollow"><?php _e('Share', 'modern') ; ?></a></strong>
@@ -178,6 +180,7 @@
                         <?php } ?>
                     <?php } ?>
                     <?php if( !osc_item_is_expired () ) { ?>
+                    <?php if(osc_logged_user_id()!=  osc_item_user_id()) { ?>
                     <?php     if(osc_reg_user_can_contact() && osc_is_web_user_logged_in() || !osc_reg_user_can_contact() ) { ?>
                     <div id="contact">
                         <h2><?php _e("Contact publisher", 'modern') ; ?></h2>
@@ -193,9 +196,9 @@
                         <form action="<?php echo osc_base_url(true) ; ?>" method="post" name="contact_form" id="contact_form">
                             <?php osc_prepare_user_info() ; ?>
                             <fieldset>
-                                <label for="yourName"><?php _e('Your name (optional)', 'modern') ; ?>:</label> <?php ContactForm::your_name(); ?>
+                                <label for="yourName"><?php _e('Your name', 'modern') ; ?>:</label> <?php ContactForm::your_name(); ?>
                                 <label for="yourEmail"><?php _e('Your e-mail address', 'modern') ; ?>:</label> <?php ContactForm::your_email(); ?>
-                                <label for="phoneNumber"><?php _e('Phone number', 'modern') ; ?>:</label> <?php ContactForm::your_phone_number(); ?>
+                                <label for="phoneNumber"><?php _e('Phone number', 'modern') ; ?> (<?php _e('optional', 'modern'); ?>):</label> <?php ContactForm::your_phone_number(); ?>
                                 <label for="message"><?php _e('Message', 'modern') ; ?>:</label> <?php ContactForm::your_message(); ?>
                                 <input type="hidden" name="action" value="contact_post" />
                                 <input type="hidden" name="page" value="item" />
@@ -220,6 +223,7 @@
                             </fieldset>
                         </form>
                     </div>
+                    <?php     } ?>
                     <?php     } ?>
                     <?php } ?>
                 </div>

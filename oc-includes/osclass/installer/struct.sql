@@ -225,13 +225,13 @@ CREATE TABLE /*TABLE_PREFIX*/t_item_description (
     fk_c_locale_code CHAR(5) NOT NULL,
     s_title VARCHAR(100) NOT NULL,
     s_description MEDIUMTEXT NOT NULL,
-    s_what LONGTEXT NULL,
+    s_what VARCHAR(100) NULL,
 
         PRIMARY KEY (fk_i_item_id, fk_c_locale_code),
         INDEX (fk_i_item_id),
         FOREIGN KEY (fk_i_item_id) REFERENCES /*TABLE_PREFIX*/t_item (pk_i_id),
         FOREIGN KEY (fk_c_locale_code) REFERENCES /*TABLE_PREFIX*/t_locale (pk_c_code)
-) ENGINE=InnoDB DEFAULT CHARACTER SET 'UTF8' COLLATE 'UTF8_GENERAL_CI';
+) ENGINE=MyISAM DEFAULT CHARACTER SET 'UTF8' COLLATE 'UTF8_GENERAL_CI';
 
 
 CREATE TABLE /*TABLE_PREFIX*/t_item_location (
@@ -320,6 +320,7 @@ CREATE TABLE /*TABLE_PREFIX*/t_pages (
     b_indelible BOOLEAN NOT NULL DEFAULT FALSE,
     dt_pub_date DATETIME NOT NULL,
     dt_mod_date DATETIME NULL,
+    i_order INT(3) NOT NULL DEFAULT 0,
 
         PRIMARY KEY (pk_i_id)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET 'UTF8' COLLATE 'UTF8_GENERAL_CI';
@@ -384,7 +385,8 @@ CREATE TABLE /*TABLE_PREFIX*/t_meta_fields (
     pk_i_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     s_name VARCHAR(255) NOT NULL,
     s_slug VARCHAR(255) NOT NULL,
-    e_type ENUM(  'TEXT',  'TEXTAREA' ) NOT NULL DEFAULT  'TEXT',
+    e_type ENUM(  'TEXT',  'TEXTAREA', 'DROPDOWN', 'RADIO' ) NOT NULL DEFAULT  'TEXT',
+    s_options VARCHAR(255) NULL,
     b_required BOOLEAN NOT NULL DEFAULT FALSE,
 
         PRIMARY KEY (pk_i_id)

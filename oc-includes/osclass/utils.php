@@ -35,6 +35,7 @@ function osc_deleteResource( $id ) {
         $resource_thum      = osc_base_path() . $resource['s_path'] .$resource['pk_i_id']."_*".".".$resource['s_extension'];
         array_map( "unlink" , glob($resource_thum));
         array_map( "unlink" , glob($resource_original));
+        osc_run_hook('delete_resource', $resource);
     }
 }
 
@@ -233,6 +234,16 @@ function osc_doRequest($url, $_data) {
 
 function osc_sendMail($params) {
     require_once osc_lib_path() . 'phpmailer/class.phpmailer.php';
+    if(osc_mailserver_pop()) {
+        require_once osc_lib_path() . 'phpmailer/class.pop3.php';
+        $pop = new POP3();
+        $pop->Authorise(( isset($params['host']) ) ? $params['host'] : osc_mailserver_host(),
+                ( isset($params['port']) ) ? $params['port'] : osc_mailserver_port(),
+                30,
+                ( isset($params['username']) ) ? $params['username'] : osc_mailserver_username(),
+                ( isset($params['username']) ) ? $params['username'] : osc_mailserver_username(),
+                0);
+    }
 
     $mail = new PHPMailer(true);
     try {
@@ -241,6 +252,8 @@ function osc_sendMail($params) {
         if (osc_mailserver_auth()) {
             $mail->IsSMTP() ;
             $mail->SMTPAuth = true ;
+        } else if(osc_mailserver_pop()) {
+            $mail->IsSMTP() ;
         }
 
         $mail->SMTPSecure = ( isset($params['ssl']) ) ? $params['ssl'] : osc_mailserver_ssl() ;
@@ -268,8 +281,10 @@ function osc_sendMail($params) {
         return true ;
 
     } catch (phpmailerException $e) {
+        error_log("OSCLAS::osc_sendMail() cannot send email! ".$mail->ErrorInfo, 0);
         return false;
     } catch (Exception $e) {
+        error_log("OSCLAS::osc_sendMail() cannot send email! ".$mail->ErrorInfo, 0);
         return false;
     }
     return false;

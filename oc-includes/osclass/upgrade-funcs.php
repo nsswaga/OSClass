@@ -115,8 +115,53 @@
         osc_changeVersionTo(220) ;
     }
 
-    if(osc_version() < 222) {
-        osc_changeVersionTo(222) ;
+    if(osc_version() < 230) {
+        $conn->osc_dbExec(sprintf("CREATE TABLE %st_item_description_tmp (
+    fk_i_item_id INT UNSIGNED NOT NULL,
+    fk_c_locale_code CHAR(5) NOT NULL,
+    s_title VARCHAR(100) NOT NULL,
+    s_description MEDIUMTEXT NOT NULL,
+    s_what VARCHAR(100) NULL,
+
+        PRIMARY KEY (fk_i_item_id, fk_c_locale_code),
+        INDEX (fk_i_item_id),
+        FOREIGN KEY (fk_i_item_id) REFERENCES %st_item (pk_i_id),
+        FOREIGN KEY (fk_c_locale_code) REFERENCES %st_locale (pk_c_code)
+) ENGINE=MyISAM DEFAULT CHARACTER SET 'UTF8' COLLATE 'UTF8_GENERAL_CI';", DB_TABLE_PREFIX, DB_TABLE_PREFIX, DB_TABLE_PREFIX));
+        
+        $descriptions = $conn->osc_dbFetchResults("SELECT * FROM %st_item_description", DB_TABLE_PREFIX);
+        foreach($descriptions as $d) {
+            $conn->osc_dbExec(sprintf("INSERT INTO %st_item_description_tmp (`fk_i_item_id` ,`fk_c_locale_code` ,`s_title` ,`s_description` ,`s_what`) VALUES ('%d',  '%s',  '%s',  '%s',  '%s')", DB_TABLE_PREFIX, $d['fk_i_item_id'], $d['fk_c_locale_code'], $d['s_title'], $d['s_description'], $d['s_what']));
+        }
+        $conn->osc_dbExec(sprintf("RENAME TABLE `%st_item_description` TO `%st_item_description_old`", DB_TABLE_PREFIX, DB_TABLE_PREFIX));
+        $conn->osc_dbExec(sprintf("RENAME TABLE `%st_item_description_tmp` TO `%st_item_description`", DB_TABLE_PREFIX, DB_TABLE_PREFIX));
+        $conn->osc_dbExec(sprintf("ALTER TABLE %st_item_description ADD FULLTEXT(s_description, s_title);", DB_TABLE_PREFIX));
+        
+        
+        $conn->osc_dbExec(sprintf("INSERT INTO %st_preference VALUES ('osclass', 'installed_plugins', '%s', 'STRING')", DB_TABLE_PREFIX, osc_get_preference('active_plugins')));
+        $conn->osc_dbExec(sprintf("INSERT INTO %st_preference VALUES ('osclass', 'mailserver_pop', '', 'STRING')", DB_TABLE_PREFIX));
+        $conn->osc_dbExec(sprintf("INSERT INTO %st_preference VALUES ('osclass', 'use_imagick', '0', 'BOOLEAN')", DB_TABLE_PREFIX));
+        $timezone = 'Europe/Madrid';
+        if(ini_get('date.timezone')!='') {
+            $timezone = ini_get('date.timezone');
+        };
+        if(date_default_timezone_get()!='') {
+            $timezone = date_default_timezone_get();
+        };
+        $conn->osc_dbExec(sprintf("INSERT INTO %st_preference VALUES ('osclass', 'timezone', '%s', 'STRING')", DB_TABLE_PREFIX, $timezone));
+
+        // alert table pages order improvement
+        $conn->osc_dbExec(sprintf("ALTER TABLE %st_pages ADD COLUMN i_order INT(3) NOT NULL DEFAULT 0  AFTER dt_mod_date ;", DB_TABLE_PREFIX));
+        // order pages
+        $aPages = $conn->osc_dbFetchResults("SELECT pk_i_id FROM %st_pages WHERE b_indelible = 0", DB_TABLE_PREFIX);
+        foreach($aPages as $key => $page) {
+            $conn->osc_dbExec(sprintf("UPDATE %st_pages SET i_order = %d WHERE pk_i_id = %d ;", DB_TABLE_PREFIX, $key, $page['pk_i_id']) );
+        }
+
+        $conn->osc_dbExec(sprintf("INSERT INTO %st_pages (s_internal_name, b_indelible, dt_pub_date) VALUES ('email_item_validation_non_register_user', 1, '%s' )", DB_TABLE_PREFIX, date('Y-m-d H:i:s')));
+        $conn->osc_dbExec(sprintf("INSERT INTO %st_pages_description (fk_i_pages_id, fk_c_locale_code, s_title, s_text) VALUES (%d, 'en_US', '{WEB_TITLE} - Validate your ad', '<p>Hi {USER_NAME},</p>\n<p>You\'re receiving this e-mail because an ad has been published at {WEB_TITLE}. Please validate this item by clicking on the link at the end of this e-mail. If you didn\'t publish this ad, please ignore this e-mail.</p>\n<p>Ad details:</p>\n<p>Contact name: {USER_NAME}<br />Contact e-mail: {USER_EMAIL}</p>\n<p>{ITEM_DESCRIPTION_ALL_LANGUAGES}</p>\n<p>Price: {ITEM_PRICE}<br />Country: {ITEM_COUNTRY}<br />Region: {ITEM_REGION}<br />City: {ITEM_CITY}<br />Url: {ITEM_URL}<br /><br />Validate your ad: {VALIDATION_LINK}</p>\n\n<p>You\'re not registered at {WEB_TITLE}, but you can still edit or delete the item {ITEM_TITLE} for a short period of time.</p>\n<p>You can edit your item by following this link: {EDIT_LINK}</p>\n<p>You can delete your item by following this link: {DELETE_LINK}</p>\n\n<p>If you register as a user to post items, you will have full access to editing options.</p>\n<p>Regards,</p>\n{WEB_TITLE}</div>')", DB_TABLE_PREFIX, $conn->get_last_id()));
+        
+        osc_changeVersionTo(230) ;
     }
 
     if(Params::getParam('action') == '') {

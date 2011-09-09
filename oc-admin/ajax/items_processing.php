@@ -16,7 +16,7 @@
      * You should have received a copy of the GNU Affero General Public
      * License along with this program. If not, see <http://www.gnu.org/licenses/>.
      */
- 
+
      class items_processing_ajax extends Item
      {
         private $items;
@@ -93,7 +93,8 @@
                 $mSearch->addCategory(Params::getParam("catId"));
             }
             if($this->search) {
-                $mSearch->addConditions(sprintf("(d.s_title LIKE '%%%s%%' OR d.s_description LIKE '%%%s%%')", $this->search, $this->search));
+                //$mSearch->addConditions(sprintf("(d.s_title LIKE '%%%s%%' OR d.s_description LIKE '%%%s%%')", $this->search, $this->search));
+                $mSearch->addConditions(sprintf("MATCH(d.s_title, d.s_description) AGAINST('%s' IN BOOLEAN MODE)", $this->search));
             }
             
             if(@$this->stat['spam']) {

@@ -55,6 +55,15 @@
     }
 
     /**
+     * Gets comments per page
+     *
+     * @return int 
+     */
+    function osc_timezone() {
+        return (getPreference('timezone')) ;
+    }
+
+    /**
      * Gets if only users can post comments
      *
      * @return boolean
@@ -279,6 +288,15 @@
         return(getBoolPreference('mailserver_auth')) ;
     }
     
+    /**
+     * Gets if the mailserver requires authetification
+     *
+     * @return boolean
+     */
+    function osc_mailserver_pop() {
+        return(getBoolPreference('mailserver_pop')) ;
+    }
+    
 
     //OTHER FUNCTIONS TO GET INFORMATION OF PREFERENCES
     /**
@@ -306,6 +324,15 @@
      */
     function osc_allowed_extension() {
         return (getPreference('allowedExt')) ;
+    }
+
+    /**
+     * Gets if use of imagick is enabled or not
+     *
+     * @return string
+     */
+    function osc_use_imagick() {
+        return (getBoolPreference('use_imagick')) ;
     }
 
     /**
@@ -549,6 +576,15 @@
      */
     function osc_active_plugins() {
         return(getPreference('active_plugins')) ;
+    }
+
+    /**
+     * Gets list of installed plugins
+     *
+     * @return string
+     */
+    function osc_installed_plugins() {
+        return(getPreference('installed_plugins')) ;
     }
 
     /**
