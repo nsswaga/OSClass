@@ -1,0 +1,24 @@
+
+#footer .inner { display:none; border-top:1px solid #d7d7d7; color:#999; font:italic 12px Georgia, Times, 'Times New Roman', serif; padding:25px 0; text-align:center; }
+#form_publish .search input#query { width: 400px; }
+.home #main .categories .category h1 { border-bottom:none; color:#000; font:18px Georgia, Times, 'Times New Roman', serif; }.home #main .categories .category h1 strong { border-bottom:none; display:block; font-weight:normal; padding-bottom:7px; }
+.home #main .categories { clear:both; float:left; margin-bottom:25px; padding:15px 0 0 10px; width:100%; background: #F7F8FC; }
+.home #main .categories .category { margin-bottom:15px; position: relative; }
+/*.home #main .categories .category h1 { padding-bottom:5px; }*/
+.home #main .categories .category li    { color:#CCC; font-size:11px; padding:5px 0; }
+.home #main .categories .category li:not(:last-child) { border-bottom:1px dotted #DDD; }
+.home #main .categories .category ul { display:none; position: absolute; z-index: 10; top:1.6em; background: #FFF; padding:1em; border: solid 1px #DDD;}
+me #main .categories .category h1 span { color:#CCC; }
+.home #main .categories .category ul { display:none; position: absolute; background: #FFF; padding:1em; border: solid 1px #DDD;}
+
+.home #main .categories .category:hover ul { display:block; -webkit-box-shadow: 2px 5px 5px rgba(0,0,0,0.3); -moz-box-shadow: 2px 5px 5px rgba(0,0,0,0.3); }
+.home #main .categories .category:hover strong a { background: lightyellow; }
+.home #main .latest_ads table td.photo { padding-left:2px;position:relative; }
+.home #main .latest_ads table td.photo img { background:#FFF; border:1px solid #DDD; padding:1px; display:block;}
+.item.content #item_head h1 { float:left; font:20px Georgia, Times, 'Times New Roman', serif; width:auto/*700px*/; margin-left:10px; }
+.item.content #type_dates strong { color:#999933; font-size:11px/*16px*/; margin-right:15px; text-transform:uppercase;}
+.item.content #item_location li:first-child {display:none; }
+.item.content #description .contact_button { display:none; line-height:normal; padding-top:10px; }
+.search div.selector { width: 250px; font-size: 12px; }
+.search div.selector span { color: #000; width: 220px; }
+
