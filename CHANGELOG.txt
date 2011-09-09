@@ -17,6 +17,7 @@ OSClass 2.2.2 2011-08-25
 - [Modern theme] Logo image is not converted now
 - [Modern theme] Some minor style changes
 
+
 OSClass 2.2.1 2011-08-04
 ------------------------
 - Fixed: show recaptcha in edit item if it's configured
