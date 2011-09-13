@@ -902,8 +902,8 @@
         if ($price == 0) return osc_apply_filter ('item_price_zero', __('Free') ) ;
 
         $currencyFormat = osc_locale_currency_format();
-        $currencyFormat = preg_replace('/%s/', 'CURRENCY', $currencyFormat) ;
-        $currencyFormat = sprintf($currencyFormat, $price);
+        $currencyFormat = preg_replace('/%c/', 'CURRENCY', $currencyFormat) ;
+        $currencyFormat = sprintf($currencyFormat, number_format($price, 2));
         $currencyFormat = preg_replace('/CURRENCY/', '%s', $currencyFormat) ;
         return osc_apply_filter('item_price', sprintf($currencyFormat , osc_item_currency() ) ) ;
     }
