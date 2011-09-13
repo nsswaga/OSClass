@@ -48,6 +48,7 @@
                                 <p class="checkbox"><?php UserForm::rememberme_login_checkbox();?> <label for="rememberMe"><?php _e('Remember me', 'modern') ; ?></label></p>
                                 <button type="submit"><?php _e('Log in', 'modern') ; ?></button>
                                 <div class="forgot">
+                                    <?php fbc_button(); ?>
                                     <a href="<?php echo osc_recover_user_password_url() ; ?>"><?php _e("Forgot password?", 'modern');?></a>
                                 </div>
                             </fieldset>
