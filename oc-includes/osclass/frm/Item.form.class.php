@@ -170,9 +170,9 @@
         {
             if($item==null) { $item = osc_item(); };
             if( Session::newInstance()->_getForm('price') != "" ) {
-                $item['f_price'] = Session::newInstance()->_getForm('price');
+                $item['s_price'] = Session::newInstance()->_getForm('price');
             }
-            parent::generic_input_text('price', (isset($item['f_price'])) ? $item['f_price'] : null) ;
+            parent::generic_input_text('price', (isset($item['s_price'])) ? osc_prepare_price($item['s_price']) : null) ;
         }
         // OK
         static public function currency_select($currencies = null, $item = null) {
@@ -396,18 +396,29 @@
         $('#region').attr( "autocomplete", "off" );
         $('#city').attr( "autocomplete", "off" );
 
+        $('#countryId').change(function(){
+            $('#regionId').val('');
+            $('#region').val('');
+            $('#cityId').val('');
+            $('#city').val('');            
+        });
+
 
         $('#region').live('keyup.autocomplete', function(){
+            $('#regionId').val('');
             $( this ).autocomplete({
                 source: "<?php echo osc_base_url(true); ?>?page=ajax&action=location_regions&country="+$('#countryId').val(),
                 minLength: 2,
                 select: function( event, ui ) {
+                    $('#cityId').val('');
+                    $('#city').val('');
                     $('#regionId').val(ui.item.id);
                 }
             });
         });
 
         $('#city').live('keyup.autocomplete', function(){
+            $('#cityId').val('');
             $( this ).autocomplete({
                 source: "<?php echo osc_base_url(true); ?>?page=ajax&action=location_cities&region="+$('#regionId').val(),
                 minLength: 2,
@@ -445,9 +456,8 @@
                     digits: true
                 },
                 <?php if(osc_price_enabled_at_items()) { ?>
-                price: {
-                    number: true,
-                    maxlength: 15
+                price: {                   
+                    maxlength: 50
                 },
                 currency: "required",
                 <?php } ?>
@@ -475,8 +485,7 @@
                 catId: "<?php _e('Choose one category'); ?>.",
                 <?php if(osc_price_enabled_at_items()) { ?>
                 price: {
-                    number: "<?php _e('Price: enter a valid number'); ?>.",
-                    maxlength: "<?php _e("Price: no more than 15 characters"); ?>."
+                    maxlength: "<?php _e("Price: no more than 50 characters"); ?>."
                 },
                 currency: "<?php _e("Currency: make your selection"); ?>.",
                 <?php } ?>
@@ -756,7 +765,6 @@
                 },
                 <?php if(osc_price_enabled_at_items()) { ?>
                 price: {
-                    number: true,
                     maxlength: 15
                 },
                 currency: "required",
@@ -797,8 +805,7 @@
                 catId: "<?php _e('Choose one category'); ?>.",
                 <?php if(osc_price_enabled_at_items()) { ?>
                 price: {
-                    number: "<?php _e('Price: enter a valid number'); ?>.",
-                    maxlength: "<?php _e("Price: no more than 15 characters"); ?>."
+                    maxlength: "<?php _e("Price: no more than 50 characters"); ?>."
                 },
                 currency: "<?php _e("Currency: make your selection"); ?>.",
                 <?php } ?>
