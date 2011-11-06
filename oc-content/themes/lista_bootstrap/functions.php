@@ -684,7 +684,7 @@ JAVASCRIPT;
     
     function item_price_input() { ?>
         <?php $item = (osc_item() != null) ? osc_item() : array() ; ?>
-        <input type="text" id="price" class="medium" name="f_price" value="<?php echo get_item_price($item) ; ?>">
+        <input type="text" id="price" class="medium" name="price" value="<?php echo get_item_price($item) ; ?>">
         <?php
     }
     
