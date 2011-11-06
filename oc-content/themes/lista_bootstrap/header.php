@@ -2,11 +2,11 @@
       <div class="topbar">
         <div class="fill">
           <div class="container">
-            <a href="http://beta.lista.ph" class="brand"><img border="0" alt="Lista.ph" title="Lista.ph" src="http://www.lista.ph.s3.amazonaws.com/images/nav_logo.png"></a>
+            <a href="<?php echo osc_base_url(true); ?>" class="brand"><img border="0" alt="Lista.ph" title="Lista.ph" src="http://www.lista.ph.s3.amazonaws.com/images/nav_logo.png"></a>
             <ul class="nav">
                 <?php while ( osc_has_categories() ) { ?>
                 <li class="<?php echo osc_category_slug() ; ?><?php if ( osc_count_subcategories() > 0 ) { ?> menu<?php } ?>">
-                    <a href="<?php echo osc_search_category_url() ; ?>" <?php if ( osc_count_subcategories() > 0 ) { ?>class="menu"<?php } ?>><?php View::newInstance()->_erase('subcategories'); echo osc_category_name() ; ?>(<?php echo osc_category_total_items() ; ?>)</a>
+                    <a href="<?php echo osc_search_category_url() ; ?>" <?php if ( osc_count_subcategories() > 0 ) { ?>class="menu"<?php } ?>><?php View::newInstance()->_erase('subcategories'); echo osc_category_name() ; ?> (<?php echo osc_category_total_items() ; ?>)</a>
                     <?php if ( osc_count_subcategories() > 0 ) { ?>
                     <ul class="menu-dropdown">
                         <?php while ( osc_has_subcategories() ) { ?>
@@ -28,7 +28,7 @@
                             <li><a class="menu" href="<?php echo osc_user_login_url() ; ?>"><?php _e('Login', 'twitter_bootstrap') ; ?></a>
                                 <ul class="menu-dropdown">
                                     <li>
-                                        <form method="post" action="http://beta.lista.ph/index.php">
+                                        <form method="post" action="<?php echo osc_base_url(true); ?>">
                                           <input type="hidden" value="login" name="page">
                                           <input type="hidden" value="login_post" name="action">
                                           <ul>
