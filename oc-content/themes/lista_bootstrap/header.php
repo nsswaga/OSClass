@@ -6,7 +6,7 @@
             <ul class="nav">
                 <?php while ( osc_has_categories() ) { ?>
                 <li class="<?php echo osc_category_slug() ; ?><?php if ( osc_count_subcategories() > 0 ) { ?> menu<?php } ?>">
-                    <a href="<?php echo osc_search_category_url() ; ?>" <?php if ( osc_count_subcategories() > 0 ) { ?>class="menu"<?php } ?>><?php View::newInstance()->_erase('subcategories'); echo osc_category_name() ; ?></a>
+                    <a href="<?php echo osc_search_category_url() ; ?>" <?php if ( osc_count_subcategories() > 0 ) { ?>class="menu"<?php } ?>><?php View::newInstance()->_erase('subcategories'); echo osc_category_name() ; ?>(<?php echo osc_category_total_items() ; ?>)</a>
                     <?php if ( osc_count_subcategories() > 0 ) { ?>
                     <ul class="menu-dropdown">
                         <?php while ( osc_has_subcategories() ) { ?>
